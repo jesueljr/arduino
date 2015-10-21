@@ -13,12 +13,8 @@ public class GenerateCFilesFromBitMap1Bit {
 	
 	
 	
-	public GenerateCFilesFromBitMap1Bit(){
-		String args[]={"projectLogo","logo","48","72"};
-		verifyArgs(args);
-		readBitMap(args[0],args[2],args[3]);
-		createHeaderFile(args[1]); 
-		createCPreProcessorFile(args[1],args[2],args[3]);	    		
+	public GenerateCFilesFromBitMap1Bit(String[] args){
+		main(args);
 	}
 	
 	
@@ -26,9 +22,13 @@ public class GenerateCFilesFromBitMap1Bit {
 	
 	public static void main(String[] args) {
 		verifyArgs(args);
+		if (exiting) return;
+		createHeaderFile(args[1]);
+		if (exiting) return;
+		createCPreProcessorFile(args[1],args[2],args[3]);
+		if (exiting) return;
 		readBitMap(args[0],args[2],args[3]);
-		createHeaderFile(args[1]); 
-		createCPreProcessorFile(args[1],args[2],args[3]);	    				
+		if (exiting) return;
 	}
 
 	
@@ -104,6 +104,7 @@ public class GenerateCFilesFromBitMap1Bit {
 			}
 	    	String hexConvertedFromByteRead = String.format("%8s", Integer.toBinaryString(byteRead & 0xFF)).replace(' ', '0');
 	    	//System.out.print(hexConvertedFromByteRead+" "); //imprime tudo
+	    	//System.out.print(Integer.toBinaryString(byteRead)+" ");//imprime tudo
 	    	if ( i>61){
 	    		lineFeedCount+=1;
 	    		if (columns.equals("48")){
@@ -118,10 +119,10 @@ public class GenerateCFilesFromBitMap1Bit {
 	    System.out.println("};");
 	    System.out.println();
 	    if (Integer.parseInt(rows) != totalLines){
-		    System.out.println("//Total lines ERROR: "+totalLines+", informed was "+rows);	
+		    System.out.println("/*Total lines ERROR: "+totalLines+", informed was "+rows+" */");	
 	    }
 	    else{
-		    System.out.println("//Total lines: "+totalLines);		    	
+		    System.out.println("/* Total lines: "+totalLines+" */");		    	
 	    }
 	    
 	    try {
@@ -194,17 +195,18 @@ public class GenerateCFilesFromBitMap1Bit {
 	
 	
 	private static void verifyArgs(String[] args) {
-		System.out.println("//"+args.length + " args: "+ args[0]+" "+args[1]+" "+args[2]+" "+args[3]);
 		if (args.length!=4 || (!args[2].equals("48") && !args[2].equals("96"))){
 			/*Instructions*/
-			System.out.println("\nWrong number of args, 4 args are required:");
-			System.out.println("      First arg <bitmapName> without extension");
-			System.out.println("      Second arg <cFileName> without extension");
-			System.out.println("i.e.: java GenerateCFilesFromBitMap1Bit <bitmapName> <cFileName>");
-			System.out.println("e.g.: java GenerateCFilesFromBitMap1Bit qrInvertedFinal qrLogo\n");
+			System.out.println("\nWrong number of args.");
+			System.out.println("Usage: java GenerateCFilesFromBitMap1Bit <bitmapName> <cFileName> <bitMapColumns> <bitMapLines>");
+			System.out.println("	1st arg <bitmapName> without extension");
+			System.out.println("	2nd arg <cFileName> without extension");
+			System.out.println("	3rd arg <bitMapColumns>");
+			System.out.println("	4th arg <bitMapLines>");
 			System.out.println("Exiting...");
-			return;
-		}		
+			exiting = true;
+		}
+		else System.out.println("/* "+args.length + " args: "+ args[0]+" "+args[1]+" "+args[2]+" "+args[3]+" */");
 	}
 	
 	
